@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fisto Application — Demo Workspace</title>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- Lenis Smooth Scroll -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.25/dist/lenis.min.css">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<link rel="icon" href="./fisto-logo-favicon.png">
+
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<!-- PAGE LOADER -->
+<div id="page-loader">
+  <div class="loader-logo">fisto.</div>
+  <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+</div>
+
+<!-- CURSOR GLOW -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- ─── NAVBAR ─────────────────────────────────────────────────────────── -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <img src="fisto-logo.png" alt="Fisto" />
+  </a>
+
+  <ul class="nav-links">
+    <li>
+      <a href="#" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Website
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        IDC
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        2D 3D Animation
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_blank" rel="noopener" class="active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="2"/><rect x="13" y="2" width="9" height="9" rx="2"/><rect x="2" y="13" width="9" height="9" rx="2"/><rect x="13" y="13" width="9" height="9" rx="2"/></svg>
+        Applications
+      </a>
+    </li>
+  </ul>
+
+  <div class="nav-right">
+    <!-- Manage Projects (hidden until logged in) -->
+    <button class="nav-manage-btn" id="manageProjectsBtn" onclick="openManageProjects()" style="display:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Manage Projects
+    </button>
+
+    <!-- Master Access Login Button -->
+    <button class="nav-login-btn" id="loginBtn" onclick="openMasterLoginModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3H9a6 6 0 0 0-6 6v12a6 6 0 0 0 6 6h6a6 6 0 0 0 6-6V9a6 6 0 0 0-6-6z"/><polyline points="10 14 12 16 14 12"/></svg>
+      Master Access
+    </button>
+
+    <!-- Logout Button (hidden until logged in) -->
+    <button class="nav-logout-btn" id="logoutBtn" onclick="logoutMaster()" style="display:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
+  </div>
+
+  <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+    <svg id="hamburgerIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#" target="_blank">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    Website
+  </a>
+  <a href="#" target="_blank">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    IDC
+  </a>
+  <a href="#" target="_blank">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    2D 3D Animation
+  </a>
+  <a href="#" target="_blank">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="2"/><rect x="13" y="2" width="9" height="9" rx="2"/><rect x="2" y="13" width="9" height="9" rx="2"/><rect x="13" y="13" width="9" height="9" rx="2"/></svg>
+    Applications
+  </a>
+  <button class="nav-login-btn-mobile" id="loginBtnMobile" onclick="openMasterLoginModal()">Master Access</button>
+</div>
+
+<!-- ─── HERO ───────────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-gradient"></div>
+  <div class="hero-content">
+   
+    <h1 class="hero-title" id="heroTitle">
+      Explore Every<br/><span class="accent-word">Fisto Application</span>
+    </h1>
+    <p class="hero-sub" id="heroSub">
+      A curated showcase of all our live applications — browse by category, search by project, and explore what we've built for our clients.
+    </p>
+    <button class="hero-cta" id="heroCta" onclick="document.getElementById('workspace').scrollIntoView({behavior:'smooth'})">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      Browse Apps
+    </button>
+  </div>
+</section>
+
+<!-- ─── WORKSPACE ──────────────────────────────────────────────────────── -->
+<section id="workspace">
+  <div class="workspace-container">
+    <div class="workspace-header">
+      <div>
+        <h2 class="workspace-title">Application Demos</h2>
+        <p class="workspace-count" id="workspaceCount">Loading...</p>
+      </div>
+    </div>
+
+    <!-- Controls Row -->
+    <div class="controls-row">
+      <!-- Search -->
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Search by company, project, description…" autocomplete="off" />
+        <button class="search-clear" id="searchClear" title="Clear">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="autocomplete-wrap">
+        <svg class="sort-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+        <input type="text" id="categoryInput" placeholder="Filter by category…" autocomplete="off" readonly />
+        <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+      </div>
+    </div>
+
+    <!-- Layout -->
+    <div class="workspace-layout">
+      <!-- Grid -->
+      <main class="grid-main">
+        <div class="cards-grid" id="cardsGrid">
+          <!-- Generated by JS -->
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────────────────── -->
+<footer>
+  <p>© 2025 Fisto. All rights reserved. · Demo Workspace</p>
+</footer>
+
+<!-- ─── TOAST CONTAINER ────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ─── MODALS ─────────────────────────────────────────────────────────── -->
+
+<!-- Master Login Modal -->
+<div class="modal-overlay" id="masterLoginModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Master Access Login</h3>
+      <button class="modal-close" onclick="closeMasterLoginModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="login-container">
+        <p class="login-description">Enter your master password to access project management.</p>
+        <div class="form-group">
+          <label>Master Password</label>
+          <div class="password-input-wrap">
+            <input type="password" id="masterPwInput" placeholder="Enter password" />
+            <button type="button" class="password-visibility-toggle" id="masterPasswordToggle" onclick="toggleMasterPasswordVisibility()" aria-label="Show master password" title="Show password">
+              <svg class="eye-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-hide" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 4.2A10.7 10.7 0 0 1 12 4c6.5 0 10 8 10 8a18.5 18.5 0 0 1-3.1 4.2M6.6 6.6C3.7 8.6 2 12 2 12s3.5 8 10 8c1.4 0 2.7-.3 3.8-.8"/></svg>
+            </button>
+          </div>
+          <span class="pw-error" id="pwError"></span>
+        </div>
+        <div class="form-actions">
+          <button class="btn-cancel" onclick="closeMasterLoginModal()">Cancel</button>
+          <button class="btn-save" onclick="loginMaster()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Login
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Credentials Modal -->
+<div class="modal-overlay" id="credsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="credsModalTitle">App Credentials</h3>
+      <button class="modal-close" onclick="closeModal('credsModal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="credsModalBody"></div>
+  </div>
+</div>
+
+<!-- Manage Projects Modal -->
+<div class="modal-overlay" id="manageProjectsModal">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Manage Projects
+      </h3>
+      <button class="modal-close" onclick="closeManageProjects()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="manage-tabs">
+        <button class="manage-tab active" onclick="switchManageTab('projects')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="2"/><rect x="13" y="2" width="9" height="9" rx="2"/><rect x="2" y="13" width="9" height="9" rx="2"/><rect x="13" y="13" width="9" height="9" rx="2"/></rect></svg>
+          All Projects
+        </button>
+        <button class="manage-tab" onclick="switchManageTab('categories')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+          Categories
+        </button>
+      </div>
+
+      <!-- Projects Tab -->
+      <div class="manage-tab-content active" id="projectsTabContent">
+        <div class="manage-actions">
+          <button class="btn-add-new" onclick="openCardForm()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add New Project
+          </button>
+        </div>
+        <div class="manage-projects-grid" id="manageProjectsGrid">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+
+      <!-- Categories Tab -->
+      <div class="manage-tab-content" id="categoriesTabContent">
+        <div class="manage-actions">
+          <button class="btn-add-new" onclick="openAddCategoryModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add New Category
+          </button>
+        </div>
+        <div class="categories-list" id="categoriesList">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Card Form Modal -->
+<div class="modal-overlay" id="cardFormModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="cardFormTitle">Add New Project</h3>
+      <button class="modal-close" onclick="closeModal('cardFormModal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" id="cardFormGrid">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-body">
+      <div class="delete-confirm">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <h3>Delete this project?</h3>
+        <p>This action cannot be undone. The project card will be permanently removed.</p>
+        <div class="delete-confirm-btns">
+          <button class="btn-cancel" onclick="closeModal('deleteModal')">Cancel</button>
+          <button class="btn-confirm-delete" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal-overlay" id="addCatModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h3>Add New Category</h3>
+      <button class="modal-close" onclick="closeModal('addCatModal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Category Name <span>*</span></label>
+        <input type="text" id="newCatInput" placeholder="e.g. Analytics App" />
+        <span class="form-error" id="catError"></span>
+      </div>
+      <div class="form-actions" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border);">
+        <button class="btn-cancel" onclick="closeModal('addCatModal')">Cancel</button>
+        <button class="btn-save" onclick="addNewCategory()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add Category
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SCRIPTS ─────────────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.25/dist/lenis.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
