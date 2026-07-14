@@ -474,7 +474,7 @@ function setupSmoothScroll() {
 
 function setupHeroAnimations() {
     if (typeof gsap === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const targets = ['#heroEyebrow', '#heroTitle', '#heroSub', '#heroStats', '#heroCta'];
+    const targets = ['#heroTitle', '#heroSub', '#heroCta'];
     gsap.from(targets, {
         y: 28,
         opacity: 0,
