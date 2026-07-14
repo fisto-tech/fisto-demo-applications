@@ -33,6 +33,7 @@
             <div class="blob-dot"></div>
             <div class="blob-dot"></div>
         </div>
+        <p class="loader-brand">Loading <span>Fisto</span> Applications…</p>
         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none;">
     <defs>
       <filter id="liquid-glow">
@@ -107,16 +108,16 @@
 
     <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobileMenu">
-        <a href="#" target="_blank">
+        <a href="https://website-demo-workspace.vercel.app/" target="_blank" rel="noopener">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>            Website
         </a>
-        <a href="#" target="_blank">
+        <a href="https://fisto-idc-webpage.vercel.app/" target="_blank" rel="noopener">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> IDC
         </a>
-        <a href="#" target="_blank">
+        <a href="#" target="_blank" rel="noopener">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>            2D 3D Animation
         </a>
-        <a href="#" target="_blank">
+        <a href="#" class="active">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="2"/><rect x="13" y="2" width="9" height="9" rx="2"/><rect x="2" y="13" width="9" height="9" rx="2"/><rect x="13" y="13" width="9" height="9" rx="2"/></svg>            Applications
         </a>
         <button class="nav-login-btn-mobile" id="loginBtnMobile" onclick="openMasterLoginModal()">Master Access</button>
@@ -126,13 +127,32 @@
     <section id="hero">
         <div class="hero-gradient"></div>
         <div class="hero-content">
-
+            <div class="hero-eyebrow" id="heroEyebrow">
+                <span class="hero-eyebrow-dot"></span>
+                Live Demo Workspace
+            </div>
             <h1 class="hero-title" id="heroTitle">
                 Explore Every<br/><span class="accent-word">Fisto Application</span>
             </h1>
             <p class="hero-sub" id="heroSub">
                 A curated showcase of all our live applications — browse by category, search by project, and explore what we've built for our clients.
             </p>
+            <div class="hero-stats" id="heroStats">
+                <div class="hero-stat">
+                    <span class="hero-stat-value" id="heroStatApps">—</span>
+                    <span class="hero-stat-label">Applications</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value" id="heroStatCats">—</span>
+                    <span class="hero-stat-label">Categories</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">Live</span>
+                    <span class="hero-stat-label">Status</span>
+                </div>
+            </div>
             <button class="hero-cta" id="heroCta" onclick="document.getElementById('workspace').scrollIntoView({behavior:'smooth'})">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
       Browse Apps
@@ -195,7 +215,7 @@
 
     <!-- ─── FOOTER ─────────────────────────────────────────────────────────── -->
     <footer>
-        <p>© 2026 Fisto. All rights reserved. · Demo Workspace</p>
+        <p><span class="footer-brand">Fisto</span> · Demo Workspace · © 2026 All rights reserved.</p>
     </footer>
 
     <!-- ─── TOAST CONTAINER ────────────────────────────────────────────────── -->
@@ -404,14 +424,16 @@
                 </div>
             </div>
         </div>
-        <!-- Back to Top Button -->
-        <button id="backToTopBtn" class="back-to-top" aria-label="Back to top">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-</button>
+    </div>
 
-        <!-- ─── SCRIPTS ─────────────────────────────────────────────────────────── -->
-        <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.25/dist/lenis.min.js"></script>
-        <script src="app.js"></script>
+    <!-- Back to Top Button -->
+    <button id="backToTopBtn" class="back-to-top" aria-label="Back to top">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </button>
+
+    <!-- ─── SCRIPTS ─────────────────────────────────────────────────────────── -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.25/dist/lenis.min.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>

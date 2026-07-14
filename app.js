@@ -110,7 +110,13 @@ function renderCards() {
       <div class="app-card-content"><div class="app-card-topline"><span class="app-card-tag">${escapeHtml(card.category)}</span></div><div class="app-card-company">${escapeHtml(card.company)}</div><h3 class="app-card-title">${escapeHtml(card.title)}</h3><p class="app-card-desc">${escapeHtml(card.description)}</p>
       <div class="app-card-actions"><button type="button" class="card-btn card-btn-primary" data-view-card="${index}">View App <svg class="view-app-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button><button type="button" class="card-btn card-btn-secondary ${openCredentialCardId === card.id ? 'is-open' : ''}" data-credentials-card="${index}" aria-expanded="${openCredentialCardId === card.id}" aria-label="${openCredentialCardId === card.id ? 'Close credentials' : 'Open credentials'}">Credentials <svg class="credentials-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="${openCredentialCardId === card.id ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'}"/></svg></button></div>
       <div class="credentials-accordion ${openCredentialCardId === card.id ? 'is-open' : ''}">${buildCardCredentials(card.credentials)}</div></div>
-    </article>`).join('') : '<div class="empty-state"><h3>No projects found</h3><p>Try a different search or category.</p></div>';
+    </article>`).join('') : `<div class="empty-state">
+      <div class="empty-state-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      </div>
+      <h3>No projects found</h3>
+      <p>Try a different search term or category filter to discover more applications.</p>
+    </div>`;
     grid.querySelectorAll('[data-view-card]').forEach(button => button.addEventListener('click', () => viewApp(filtered[Number(button.dataset.viewCard)].id)));
     grid.querySelectorAll('[data-credentials-card]').forEach(button => button.addEventListener('click', () => toggleCardCredentials(filtered[Number(button.dataset.credentialsCard)].id)));
     grid.querySelectorAll('[data-copy-value]').forEach(button => button.addEventListener('click', () => copyToClipboard(decodeURIComponent(button.dataset.copyValue), button)));
@@ -413,7 +419,86 @@ async function confirmDeleteCategory() {
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 function showToast(message, type = 'info') { const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.textContent = message; document.getElementById('toast-container').appendChild(toast); setTimeout(() => toast.remove(), 3500); }
-function renderAll() { renderFilters(); renderCards(); document.getElementById('categoryInput').value = activeFilter; }
+function renderAll() { renderFilters(); renderCards(); document.getElementById('categoryInput').value = activeFilter; updateHeroStats(); }
+
+function updateHeroStats() {
+    const appsEl = document.getElementById('heroStatApps');
+    const catsEl = document.getElementById('heroStatCats');
+    if (appsEl) appsEl.textContent = cards.length;
+    if (catsEl) catsEl.textContent = Math.max(categories.length - 1, 0);
+}
+
+function setupNavbarScroll() {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+    const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+}
+
+function setupMobileMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (!hamburger || !mobileMenu) return;
+    hamburger.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.toggle('active');
+        hamburger.classList.toggle('active', isOpen);
+        hamburger.setAttribute('aria-expanded', isOpen);
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+            hamburger.setAttribute('aria-expanded', 'false');
+        });
+    });
+}
+
+function setupCursorGlow() {
+    const glow = document.getElementById('cursorGlow');
+    if (!glow || window.matchMedia('(max-width: 768px), (hover: none)').matches) return;
+    document.addEventListener('mousemove', event => {
+        glow.style.left = `${event.clientX}px`;
+        glow.style.top = `${event.clientY}px`;
+        glow.classList.add('active');
+    });
+    document.addEventListener('mouseleave', () => glow.classList.remove('active'));
+}
+
+function setupSmoothScroll() {
+    if (typeof Lenis === 'undefined') return;
+    const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+}
+
+function setupHeroAnimations() {
+    if (typeof gsap === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const targets = ['#heroEyebrow', '#heroTitle', '#heroSub', '#heroStats', '#heroCta'];
+    gsap.from(targets, {
+        y: 28,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: 'power3.out',
+        delay: 0.15
+    });
+}
+
+function setupCardAnimations() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const cards = document.querySelectorAll('.app-card');
+    if (!cards.length) return;
+    gsap.from(cards, {
+        scrollTrigger: { trigger: '#cardsGrid', start: 'top 85%' },
+        y: 32,
+        opacity: 0,
+        duration: 0.55,
+        stagger: 0.08,
+        ease: 'power2.out'
+    });
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.modal-overlay').forEach(overlay => overlay.addEventListener('click', event => { if (event.target === overlay) closeModal(overlay.id); }));
@@ -421,7 +506,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('saveEditCatBtn').addEventListener('click', saveEditCategory);
   document.getElementById('confirmDeleteCatBtn').addEventListener('click', confirmDeleteCategory);
   document.getElementById('masterPwInput').addEventListener('keydown', event => { if (event.key === 'Enter') loginMaster(); });
-  setupSearch(); setupAutocomplete(); setupSort(); await loadWorkspace();
+  setupSearch(); setupAutocomplete(); setupSort();
+  setupNavbarScroll(); setupMobileMenu(); setupCursorGlow(); setupSmoothScroll();
+  await loadWorkspace();
   
   const backToTopBtn = document.getElementById('backToTopBtn');
   window.addEventListener('scroll', () => {
@@ -443,5 +530,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   renderAll();
+  setupHeroAnimations();
+  setupCardAnimations();
   document.getElementById('page-loader')?.classList.add('hidden');
 });
