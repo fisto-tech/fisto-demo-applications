@@ -95,7 +95,9 @@ function renderCards() {
     const grid = document.getElementById('cardsGrid');
     grid.innerHTML = filtered.length ? filtered.map((card, index) => `
     <article class="app-card">
-      <div class="app-card-image"><img src="${escapeHtml(resolveAssetPath(card.image))}" alt="${escapeHtml(card.title)}" onerror="this.src='fisto-logo.png'" /></div>
+      <div class="app-card-image image-skeleton">
+        <img src="${escapeHtml(resolveAssetPath(card.image))}" alt="${escapeHtml(card.title)}" onload="this.parentElement.classList.remove('image-skeleton')" onerror="this.parentElement.classList.remove('image-skeleton'); this.src='fisto-logo.png'" loading="lazy" />
+      </div>
       <div class="app-card-content"><div class="app-card-topline"><span class="app-card-tag">${escapeHtml(card.category)}</span></div><div class="app-card-company">${escapeHtml(card.company)}</div><h3 class="app-card-title">${escapeHtml(card.title)}</h3><p class="app-card-desc">${escapeHtml(card.description)}</p>
       <div class="app-card-actions"><button type="button" class="card-btn card-btn-primary" data-view-card="${index}">View App</button><button type="button" class="card-btn card-btn-secondary ${openCredentialCardId === card.id ? 'is-open' : ''}" data-credentials-card="${index}" aria-expanded="${openCredentialCardId === card.id}" aria-label="${openCredentialCardId === card.id ? 'Close credentials' : 'Open credentials'}">Credentials <svg class="credentials-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="${openCredentialCardId === card.id ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'}"/></svg></button></div>
       <div class="credentials-accordion ${openCredentialCardId === card.id ? 'is-open' : ''}">${buildCardCredentials(card.credentials)}</div></div>
@@ -185,7 +187,19 @@ function switchManageTab(tabName) {
   document.getElementById('projectsTabContent').classList.toggle('active', tabName === 'projects'); document.getElementById('categoriesTabContent').classList.toggle('active', tabName === 'categories');
   tabName === 'projects' ? renderManageProjects() : renderManageCategories();
 }
-function renderManageProjects() { document.getElementById('manageProjectsGrid').innerHTML = cards.map(card => `<div class="manage-card"><div class="manage-card-title">${escapeHtml(card.title)}</div><div class="manage-card-info"><strong>${escapeHtml(card.company)}</strong><div>${escapeHtml(card.category)} · ${card.credentials.length} role${card.credentials.length === 1 ? '' : 's'}</div></div><div class="manage-card-actions"><button class="btn-edit" onclick="editCard('${card.id}')">Edit</button><button class="btn-delete" onclick="prepareDeleteCard('${card.id}')">Delete</button></div></div>`).join(''); }
+function renderManageProjects() {
+  document.getElementById('manageProjectsGrid').innerHTML = cards.map(card => {
+    const image = resolveAssetPath(card.image);
+    return `<div class="manage-card">
+      <div class="manage-card-image image-skeleton"><img src="${escapeHtml(image)}" alt="${escapeHtml(card.title)}" onload="this.parentElement.classList.remove('image-skeleton')" onerror="this.parentElement.classList.remove('image-skeleton'); this.src='fisto-logo.png'" loading="lazy"></div>
+      <div class="manage-card-body">
+        <div class="manage-card-title">${escapeHtml(card.title)}</div>
+        <div class="manage-card-info"><strong>${escapeHtml(card.company)}</strong><div>${escapeHtml(card.category)} · ${card.credentials.length} role${card.credentials.length === 1 ? '' : 's'}</div></div>
+      </div>
+      <div class="manage-card-actions"><button class="btn-edit" onclick="editCard('${card.id}')">Edit</button><button class="btn-delete" onclick="prepareDeleteCard('${card.id}')">Delete</button></div>
+    </div>`;
+  }).join('');
+}
 function renderManageCategories() { document.getElementById('categoriesList').innerHTML = categories.filter(category => category !== 'All').map(category => `<div class="category-item"><div><div class="category-name">${escapeHtml(category)}</div><div class="category-count">${cards.filter(card => card.category === category).length} projects</div></div><div class="category-item-actions"><button class="btn-edit-cat" onclick="editCategory(${JSON.stringify(category)})">Edit</button><button class="btn-delete-cat" onclick="deleteCategory(${JSON.stringify(category)})">Delete</button></div></div>`).join(''); }
 
 function companySuggestions() { return [...new Set(cards.map(card => card.company).filter(Boolean))].sort((a, b) => a.localeCompare(b)); }
