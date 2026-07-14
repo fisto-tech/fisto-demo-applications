@@ -9,10 +9,13 @@ let activeFilter = 'All';
 let searchQuery = '';
 let editingId = null;
 let deletingId = null;
+let editingCategoryName = null;
+let deletingCategoryName = null;
 let isMasterLoggedIn = false;
 let usingApi = false;
 let categoryFocusIndex = -1;
 let openCredentialCardId = null;
+let currentSort = 'none';
 
 const defaultCards = () => [
     { id: 'demo-1', title: 'Weave Pattern Studio', description: 'Interactive textile pattern visualisation for bulk-order planning.', company: 'Lakshmi Textiles', category: 'Pattern App', image: 'fisto-logo.png', url: '', credentials: [{ role: 'Administrator', username: 'demo@lakshmi.in', password: 'weave123', remarks: 'Full access' }] },
@@ -74,7 +77,13 @@ async function loadWorkspace() {
 
 function getFilteredCards() {
     const query = searchQuery.toLowerCase();
-    return cards.filter(card => (activeFilter === 'All' || card.category === activeFilter) && (!query || [card.title, card.company, card.description, card.category].some(value => value.toLowerCase().includes(query))));
+    let filtered = cards.filter(card => (activeFilter === 'All' || card.category === activeFilter) && (!query || [card.title, card.company, card.description, card.category].some(value => value.toLowerCase().includes(query))));
+    if (currentSort === 'category') {
+        filtered.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
+    } else if (currentSort === 'a-z') {
+        filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    }
+    return filtered;
 }
 
 function renderFilters() {
@@ -99,7 +108,7 @@ function renderCards() {
         <img src="${escapeHtml(resolveAssetPath(card.image))}" alt="${escapeHtml(card.title)}" onload="this.parentElement.classList.remove('image-skeleton')" onerror="this.parentElement.classList.remove('image-skeleton'); this.src='fisto-logo.png'" loading="lazy" />
       </div>
       <div class="app-card-content"><div class="app-card-topline"><span class="app-card-tag">${escapeHtml(card.category)}</span></div><div class="app-card-company">${escapeHtml(card.company)}</div><h3 class="app-card-title">${escapeHtml(card.title)}</h3><p class="app-card-desc">${escapeHtml(card.description)}</p>
-      <div class="app-card-actions"><button type="button" class="card-btn card-btn-primary" data-view-card="${index}">View App</button><button type="button" class="card-btn card-btn-secondary ${openCredentialCardId === card.id ? 'is-open' : ''}" data-credentials-card="${index}" aria-expanded="${openCredentialCardId === card.id}" aria-label="${openCredentialCardId === card.id ? 'Close credentials' : 'Open credentials'}">Credentials <svg class="credentials-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="${openCredentialCardId === card.id ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'}"/></svg></button></div>
+      <div class="app-card-actions"><button type="button" class="card-btn card-btn-primary" data-view-card="${index}">View App <svg class="view-app-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button><button type="button" class="card-btn card-btn-secondary ${openCredentialCardId === card.id ? 'is-open' : ''}" data-credentials-card="${index}" aria-expanded="${openCredentialCardId === card.id}" aria-label="${openCredentialCardId === card.id ? 'Close credentials' : 'Open credentials'}">Credentials <svg class="credentials-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="${openCredentialCardId === card.id ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'}"/></svg></button></div>
       <div class="credentials-accordion ${openCredentialCardId === card.id ? 'is-open' : ''}">${buildCardCredentials(card.credentials)}</div></div>
     </article>`).join('') : '<div class="empty-state"><h3>No projects found</h3><p>Try a different search or category.</p></div>';
     grid.querySelectorAll('[data-view-card]').forEach(button => button.addEventListener('click', () => viewApp(filtered[Number(button.dataset.viewCard)].id)));
@@ -142,6 +151,33 @@ function openCategoryDropdown() {
 }
 function closeCategoryDropdown() { document.getElementById('autocompleteDropdown').classList.remove('active'); categoryFocusIndex = -1; }
 
+function openSortDropdown() {
+  document.getElementById('sortDropdown').classList.add('active');
+}
+function closeSortDropdown() {
+  document.getElementById('sortDropdown').classList.remove('active');
+}
+function setSort(sortType) {
+  currentSort = sortType;
+  const labelMap = { 'none': 'Sort: None', 'category': 'Sort: Category', 'a-z': 'Sort: A-Z' };
+  document.getElementById('sortInput').value = labelMap[sortType] || 'Sort: None';
+  closeSortDropdown();
+  renderCards();
+}
+function setupSort() {
+  const input = document.getElementById('sortInput');
+  input.addEventListener('click', event => {
+    event.stopPropagation();
+    document.getElementById('sortDropdown').classList.contains('active') ? closeSortDropdown() : openSortDropdown();
+  });
+  document.querySelectorAll('.sort-option').forEach(button => {
+    button.addEventListener('click', () => setSort(button.dataset.sort));
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.sort-wrap')) closeSortDropdown();
+  });
+}
+
 function setupAutocomplete() {
   const input = document.getElementById('categoryInput');
   input.value = activeFilter;
@@ -177,9 +213,22 @@ function toggleMasterPasswordVisibility() {
 function loginMaster() {
   const input = document.getElementById('masterPwInput');
   if (input.value !== MASTER_PASSWORD) { document.getElementById('pwError').textContent = 'Incorrect password. Try again.'; input.select(); return; }
-  isMasterLoggedIn = true; closeMasterLoginModal(); document.getElementById('loginBtn').style.display = 'none'; document.getElementById('manageProjectsBtn').style.display = 'inline-flex'; document.getElementById('logoutBtn').style.display = 'inline-flex'; openManageProjects();
+  isMasterLoggedIn = true;
+  sessionStorage.setItem('isMasterLoggedIn', 'true');
+  closeMasterLoginModal();
+  document.getElementById('loginBtn').style.display = 'none';
+  document.getElementById('manageProjectsBtn').style.display = 'inline-flex';
+  document.getElementById('logoutBtn').style.display = 'inline-flex';
+  openManageProjects();
 }
-function logoutMaster() { isMasterLoggedIn = false; document.getElementById('loginBtn').style.display = 'inline-flex'; document.getElementById('manageProjectsBtn').style.display = 'none'; document.getElementById('logoutBtn').style.display = 'none'; closeModal('manageProjectsModal'); }
+function logoutMaster() {
+  isMasterLoggedIn = false;
+  sessionStorage.removeItem('isMasterLoggedIn');
+  document.getElementById('loginBtn').style.display = 'inline-flex';
+  document.getElementById('manageProjectsBtn').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = 'none';
+  closeModal('manageProjectsModal');
+}
 function openManageProjects() { if (!isMasterLoggedIn) return openMasterLoginModal(); openModal('manageProjectsModal'); renderManageProjects(); }
 function closeManageProjects() { closeModal('manageProjectsModal'); }
 function switchManageTab(tabName) {
@@ -200,7 +249,15 @@ function renderManageProjects() {
     </div>`;
   }).join('');
 }
-function renderManageCategories() { document.getElementById('categoriesList').innerHTML = categories.filter(category => category !== 'All').map(category => `<div class="category-item"><div><div class="category-name">${escapeHtml(category)}</div><div class="category-count">${cards.filter(card => card.category === category).length} projects</div></div><div class="category-item-actions"><button class="btn-edit-cat" onclick="editCategory(${JSON.stringify(category)})">Edit</button><button class="btn-delete-cat" onclick="deleteCategory(${JSON.stringify(category)})">Delete</button></div></div>`).join(''); }
+function renderManageCategories() {
+  document.getElementById('categoriesList').innerHTML = categories.filter(category => category !== 'All').map(category => `<div class="category-item"><div><div class="category-name">${escapeHtml(category)}</div><div class="category-count">${cards.filter(card => card.category === category).length} projects</div></div><div class="category-item-actions"><button class="btn-edit-cat" data-edit-category="${escapeHtml(category)}">Edit</button><button class="btn-delete-cat" data-delete-category="${escapeHtml(category)}">Delete</button></div></div>`).join('');
+  document.querySelectorAll('[data-edit-category]').forEach(button => {
+    button.addEventListener('click', () => editCategory(button.dataset.editCategory));
+  });
+  document.querySelectorAll('[data-delete-category]').forEach(button => {
+    button.addEventListener('click', () => deleteCategory(button.dataset.deleteCategory));
+  });
+}
 
 function companySuggestions() { return [...new Set(cards.map(card => card.company).filter(Boolean))].sort((a, b) => a.localeCompare(b)); }
 function renderCredentialRows(credentials = []) { return credentials.map((credential, index) => `<div class="credential-row"><div class="credential-row-header"><strong>Credential ${index + 1}</strong><button type="button" class="credential-remove" onclick="removeCredentialRow(this)" aria-label="Remove credential">×</button></div><div class="credential-fields"><input class="credential-role" value="${escapeHtml(credential.role || '')}" placeholder="Role (e.g. Administrator)" required><input class="credential-username" value="${escapeHtml(credential.username || '')}" placeholder="Username"><input class="credential-password" type="text" value="${escapeHtml(credential.password || '')}" placeholder="Password"><input class="credential-remarks" value="${escapeHtml(credential.remarks || '')}" placeholder="Remarks (optional)"></div></div>`).join(''); }
@@ -297,8 +354,61 @@ function viewApp(id) { const card = cards.find(item => item.id === id); if (card
 
 async function addNewCategory() { const name = document.getElementById('newCatInput').value.trim(); if (!name) return; try { if (!usingApi) throw new Error('The API is not available.'); await request('categories', { method: 'POST', body: JSON.stringify({ name }) }); await loadWorkspace(); closeModal('addCatModal'); renderAll(); renderManageCategories(); } catch (error) { document.getElementById('catError').textContent = error.message; } }
 function openAddCategoryModal() { document.getElementById('newCatInput').value = ''; document.getElementById('catError').textContent = ''; openModal('addCatModal'); }
-async function editCategory(name) { const updated = prompt('Edit category name:', name)?.trim(); if (!updated || updated === name) return; try { const rows = await request('categories'); const category = rows.find(item => item.name === name); await request(`categories/${category.id}`, { method: 'PUT', body: JSON.stringify({ name: updated }) }); await loadWorkspace(); renderAll(); renderManageCategories(); } catch (error) { showToast(error.message, 'error'); } }
-async function deleteCategory(name) { try { const rows = await request('categories'); const category = rows.find(item => item.name === name); await request(`categories/${category.id}`, { method: 'DELETE' }); await loadWorkspace(); renderAll(); renderManageCategories(); } catch (error) { showToast(error.message, 'error'); } }
+function editCategory(name) {
+  editingCategoryName = name;
+  document.getElementById('editCatInput').value = name;
+  document.getElementById('editCatError').textContent = '';
+  openModal('editCatModal');
+}
+
+async function saveEditCategory() {
+  const updated = document.getElementById('editCatInput').value.trim();
+  if (!updated) {
+    document.getElementById('editCatError').textContent = 'Category name is required.';
+    return;
+  }
+  if (updated === editingCategoryName) {
+    closeModal('editCatModal');
+    return;
+  }
+  try {
+    if (!usingApi) throw new Error('The API is not available.');
+    const rows = await request('categories');
+    const category = rows.find(item => item.name === editingCategoryName);
+    if (!category) throw new Error('Category not found.');
+    await request(`categories/${category.id}`, { method: 'PUT', body: JSON.stringify({ name: updated }) });
+    await loadWorkspace();
+    closeModal('editCatModal');
+    renderAll();
+    renderManageCategories();
+    showToast('Category updated.', 'success');
+  } catch (error) {
+    document.getElementById('editCatError').textContent = error.message;
+  }
+}
+
+function deleteCategory(name) {
+  deletingCategoryName = name;
+  openModal('deleteCatModal');
+}
+
+async function confirmDeleteCategory() {
+  try {
+    if (!usingApi) throw new Error('The API is not available.');
+    const rows = await request('categories');
+    const category = rows.find(item => item.name === deletingCategoryName);
+    if (!category) throw new Error('Category not found.');
+    await request(`categories/${category.id}`, { method: 'DELETE' });
+    await loadWorkspace();
+    closeModal('deleteCatModal');
+    renderAll();
+    renderManageCategories();
+    showToast('Category deleted.', 'success');
+  } catch (error) {
+    showToast(error.message, 'error');
+    closeModal('deleteCatModal');
+  }
+}
 
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
@@ -308,7 +418,30 @@ function renderAll() { renderFilters(); renderCards(); document.getElementById('
 document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.modal-overlay').forEach(overlay => overlay.addEventListener('click', event => { if (event.target === overlay) closeModal(overlay.id); }));
   document.getElementById('confirmDeleteBtn').addEventListener('click', deleteCard);
+  document.getElementById('saveEditCatBtn').addEventListener('click', saveEditCategory);
+  document.getElementById('confirmDeleteCatBtn').addEventListener('click', confirmDeleteCategory);
   document.getElementById('masterPwInput').addEventListener('keydown', event => { if (event.key === 'Enter') loginMaster(); });
-  setupSearch(); setupAutocomplete(); await loadWorkspace(); renderAll();
+  setupSearch(); setupAutocomplete(); setupSort(); await loadWorkspace();
+  
+  const backToTopBtn = document.getElementById('backToTopBtn');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      backToTopBtn.classList.add('show');
+    } else {
+      backToTopBtn.classList.remove('show');
+    }
+  });
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  if (sessionStorage.getItem('isMasterLoggedIn') === 'true') {
+    isMasterLoggedIn = true;
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('manageProjectsBtn').style.display = 'inline-flex';
+    document.getElementById('logoutBtn').style.display = 'inline-flex';
+  }
+  
+  renderAll();
   document.getElementById('page-loader')?.classList.add('hidden');
 });
