@@ -1369,7 +1369,8 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
-    overflow-y: auto;
+    overflow: hidden;
+    overscroll-behavior: contain;
 }
 
 .modal-overlay.active {
@@ -1392,8 +1393,10 @@ body {
     box-shadow: var(--shadow-xl);
     max-width: 500px;
     width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     animation: modalSlideIn 0.35s cubic-bezier(0.25, 1, 0.5, 1);
     border: 1px solid var(--border-light);
 }
@@ -1464,6 +1467,23 @@ body {
 
 .modal-body {
     padding: 24px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+/* Keep page scrolling locked while a modal is open. */
+html.modal-open,
+body.modal-open {
+    overflow: hidden;
+}
+
+body.modal-open {
+    position: fixed;
+    width: 100%;
 }
 
 
@@ -2629,8 +2649,9 @@ body::after {
 }
 
 .mobile-menu a.active {
-    color: #fffaf3;
-    background: rgba(255, 255, 255, 0.12);
+    color: rgb(255, 255, 255);
+    box-shadow: none;
+    background: rgb(120, 96, 64);
 }
 
 #hero {
@@ -3282,6 +3303,7 @@ body {
 
 .nav-login-btn-mobile {
     background: #1f1a17;
+    color: #ffffff;
     box-shadow: none;
 }
 
@@ -3587,11 +3609,12 @@ footer .footer-brand {
 .back-to-top {
     background: #1f1a17;
     box-shadow: none;
+    transition: all .3s ease-in-out;
 }
 
 .back-to-top:hover {
-    transform: none;
-    box-shadow: none;
+    background-color: white !important;
+    color: #1f1a17;
 }
 
 @media (max-width: 768px) {

@@ -416,8 +416,22 @@ async function confirmDeleteCategory() {
   }
 }
 
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+let modalPageScrollY = 0;
+function syncModalPageLock() {
+  const hasOpenModal = document.querySelector('.modal-overlay.active');
+  const wasLocked = document.body.classList.contains('modal-open');
+  if (hasOpenModal && !wasLocked) {
+    modalPageScrollY = window.scrollY;
+    document.body.style.top = `-${modalPageScrollY}px`;
+  } else if (!hasOpenModal && wasLocked) {
+    document.body.style.top = '';
+    window.scrollTo(0, modalPageScrollY);
+  }
+  document.documentElement.classList.toggle('modal-open', Boolean(hasOpenModal));
+  document.body.classList.toggle('modal-open', Boolean(hasOpenModal));
+}
+function openModal(id) { document.getElementById(id).classList.add('active'); syncModalPageLock(); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); syncModalPageLock(); }
 function showToast(message, type = 'info') { const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.textContent = message; document.getElementById('toast-container').appendChild(toast); setTimeout(() => toast.remove(), 3500); }
 function renderAll() { renderFilters(); renderCards(); document.getElementById('categoryInput').value = activeFilter; updateHeroStats(); }
 
@@ -502,6 +516,14 @@ function setupCardAnimations() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.modal-overlay').forEach(overlay => overlay.addEventListener('click', event => { if (event.target === overlay) closeModal(overlay.id); }));
+  const cardFormModal = document.getElementById('cardFormModal');
+  cardFormModal.addEventListener('wheel', event => {
+    const formBody = cardFormModal.querySelector('.modal-body');
+    if (!formBody || formBody.scrollHeight <= formBody.clientHeight) return;
+    event.preventDefault();
+    const multiplier = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? formBody.clientHeight : 1;
+    formBody.scrollTop += event.deltaY * multiplier;
+  }, { passive: false });
   document.getElementById('confirmDeleteBtn').addEventListener('click', deleteCard);
   document.getElementById('saveEditCatBtn').addEventListener('click', saveEditCategory);
   document.getElementById('confirmDeleteCatBtn').addEventListener('click', confirmDeleteCategory);
