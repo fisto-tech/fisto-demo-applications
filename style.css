@@ -1003,9 +1003,13 @@ body {
     border-radius: var(--radius-2xl);
     overflow: hidden;
     transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
-    height: max-content;
+    height: 465px;
     box-shadow: var(--shadow-card);
     width: 100%;
+}
+
+.app-card:has(.credentials-accordion.is-open) {
+    height: auto;
 }
 
 .app-card:hover {
@@ -1475,7 +1479,9 @@ body {
     touch-action: pan-y;
 }
 
+
 /* Keep page scrolling locked while a modal is open. */
+
 html.modal-open,
 body.modal-open {
     overflow: hidden;
@@ -1820,9 +1826,7 @@ body.modal-open {
     padding-top: 8px;
 }
 
-.btn-cancel,
-.btn-save,
-.btn-add-new {
+.btn-cancel, .btn-save, .btn-add-new {
     padding: 11px 22px;
     border: none;
     border-radius: var(--radius-md);
@@ -1834,6 +1838,7 @@ body.modal-open {
     align-items: center;
     gap: 8px;
     font-family: inherit;
+    justify-content: center;
 }
 
 .btn-cancel {
@@ -3490,7 +3495,7 @@ body {
     font-size: 0.92rem;
     font-weight: 600;
     line-height: 1.45;
-    color: #3f352e;
+    color: #000000;
     margin-bottom: 8px;
 }
 
@@ -3796,10 +3801,6 @@ footer .footer-brand {
     line-height: 1.72;
 }
 
-.app-card:hover .app-card-company,
-.app-card:hover .app-card-title {
-    color: #6f4a28;
-}
 
 .card-btn {
     font-size: 0.94rem;

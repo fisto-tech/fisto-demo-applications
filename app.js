@@ -515,15 +515,10 @@ function setupCardAnimations() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  document.querySelectorAll('.modal-overlay').forEach(overlay => overlay.addEventListener('click', event => { if (event.target === overlay) closeModal(overlay.id); }));
-  const cardFormModal = document.getElementById('cardFormModal');
-  cardFormModal.addEventListener('wheel', event => {
-    const formBody = cardFormModal.querySelector('.modal-body');
-    if (!formBody || formBody.scrollHeight <= formBody.clientHeight) return;
-    event.preventDefault();
-    const multiplier = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? formBody.clientHeight : 1;
-    formBody.scrollTop += event.deltaY * multiplier;
-  }, { passive: false });
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.setAttribute('data-lenis-prevent', '');
+    overlay.addEventListener('click', event => { if (event.target === overlay) closeModal(overlay.id); });
+  });
   document.getElementById('confirmDeleteBtn').addEventListener('click', deleteCard);
   document.getElementById('saveEditCatBtn').addEventListener('click', saveEditCategory);
   document.getElementById('confirmDeleteCatBtn').addEventListener('click', confirmDeleteCategory);
