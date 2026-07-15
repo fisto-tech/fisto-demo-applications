@@ -225,6 +225,9 @@ function loginMaster() {
   document.getElementById('loginBtn').style.display = 'none';
   document.getElementById('manageProjectsBtn').style.display = 'inline-flex';
   document.getElementById('logoutBtn').style.display = 'inline-flex';
+  document.getElementById('loginBtnMobile').style.display = 'none';
+  document.getElementById('manageProjectsBtnMobile').style.display = 'flex';
+  document.getElementById('logoutBtnMobile').style.display = 'flex';
   openManageProjects();
 }
 function logoutMaster() {
@@ -233,6 +236,9 @@ function logoutMaster() {
   document.getElementById('loginBtn').style.display = 'inline-flex';
   document.getElementById('manageProjectsBtn').style.display = 'none';
   document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('loginBtnMobile').style.display = 'flex';
+  document.getElementById('manageProjectsBtnMobile').style.display = 'none';
+  document.getElementById('logoutBtnMobile').style.display = 'none';
   closeModal('manageProjectsModal');
 }
 function openManageProjects() { if (!isMasterLoggedIn) return openMasterLoginModal(); openModal('manageProjectsModal'); renderManageProjects(); }
@@ -454,16 +460,22 @@ function setupMobileMenu() {
     const hamburger = document.getElementById('hamburger');
     const mobileMenu = document.getElementById('mobileMenu');
     if (!hamburger || !mobileMenu) return;
+    
+    const hamburgerSvg = `<svg id="hamburgerIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+    const closeSvg = `<svg id="hamburgerIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
     hamburger.addEventListener('click', () => {
         const isOpen = mobileMenu.classList.toggle('active');
         hamburger.classList.toggle('active', isOpen);
         hamburger.setAttribute('aria-expanded', isOpen);
+        hamburger.innerHTML = isOpen ? closeSvg : hamburgerSvg;
     });
-    mobileMenu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
+    mobileMenu.querySelectorAll('a, button').forEach(item => {
+        item.addEventListener('click', () => {
             mobileMenu.classList.remove('active');
             hamburger.classList.remove('active');
             hamburger.setAttribute('aria-expanded', 'false');
+            hamburger.innerHTML = hamburgerSvg;
         });
     });
 }
@@ -544,6 +556,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('loginBtn').style.display = 'none';
     document.getElementById('manageProjectsBtn').style.display = 'inline-flex';
     document.getElementById('logoutBtn').style.display = 'inline-flex';
+    document.getElementById('loginBtnMobile').style.display = 'none';
+    document.getElementById('manageProjectsBtnMobile').style.display = 'flex';
+    document.getElementById('logoutBtnMobile').style.display = 'flex';
   }
   
   renderAll();
