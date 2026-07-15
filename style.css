@@ -1826,7 +1826,9 @@ body.modal-open {
     padding-top: 8px;
 }
 
-.btn-cancel, .btn-save, .btn-add-new {
+.btn-cancel,
+.btn-save,
+.btn-add-new {
     padding: 11px 22px;
     border: none;
     border-radius: var(--radius-md);
@@ -3475,7 +3477,7 @@ body {
 
 .app-card-tag {
     padding: 6px 15px;
-    font-size: .78rem;
+    font-size: .7rem;
     background: #f1ebe3;
     color: #5c4a3d;
     border: 0;
@@ -3800,7 +3802,6 @@ footer .footer-brand {
     font-size: 0.98rem;
     line-height: 1.72;
 }
-
 
 .card-btn {
     font-size: 0.94rem;
